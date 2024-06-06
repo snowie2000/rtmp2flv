@@ -8,6 +8,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/nareix/joy5/av"
+
 	"github.com/nareix/joy5/format/flv"
 	"github.com/nareix/joy5/format/rtmp"
 )
@@ -81,14 +83,15 @@ func serveFlv(w http.ResponseWriter, r *http.Request) {
 	flusher.Flush()
 
 	muxer := flv.NewMuxer(w)
-	muxer.WriteFileHeader()
-	for {
-		packet, err := rtmpConn.ReadPacket()
+	err = muxer.WriteFileHeader()
+	var packet av.Packet
+	for err == nil {
+		packet, err = rtmpConn.ReadPacket()
 		if err != nil {
 			log.Println("stream ended with error", err)
 			break
 		}
-		muxer.WritePacket(packet)
+		err = muxer.WritePacket(packet)
 	}
 	return
 }
