@@ -45,6 +45,7 @@ func getRealRtmp(url string) string {
 }
 
 func serveFlv(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
 	rtmpUrl := r.URL.Query().Get("rtmp")
 	userKey := r.URL.Query().Get("appkey")
 	if appKey != "" && userKey != appKey {
